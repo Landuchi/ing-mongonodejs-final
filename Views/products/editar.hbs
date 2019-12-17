@@ -1,0 +1,109 @@
+
+    <div class="row">
+      <div class="col-lg-8 " style="margin-top:50px;">
+        <h2 class="mt-5" style="margin-bottom:20px;">Editar el error seleccionado </h2>
+          <form action="/products/editError" method="PUT" id="form_editar">
+
+              <div class="form-group">
+                <label for="origen">Origen</label><br>
+                <input type="text" name ="origen" class="form-control" value="" id="campo_origen" required></input>
+              </div>
+              <div class="form-group">
+                <label for="codigo">Código</label><br>
+                <input type="number" name ="codigo" class="form-control" value="" id="campo_codigo" required></input>
+              </div>
+              <div class="form-group">
+                <label for="descripcion">Descripcion</label><br>
+                <textarea type="text" name ="descripcion" class="form-control" rows ="5"  id="campo_descripcion" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="fecha">Fecha</label><br>
+                <input type="date" name ="fecha" class="form-control" value="" id="campo_fecha" ></input>
+              </div>
+              <div class="form-group">
+               <input type="submit" value="Guardar cambios" class="btn btn-primary btn-lg mb-2">
+              <span id="alerta"></span>
+              </div>
+          </form>
+      </div>
+    </div>
+
+
+<script>
+
+function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    };
+
+const token = sessionStorage.getItem('token');
+var myHeaders = new Headers();
+myHeaders.append('Content-Type', 'application/json');
+myHeaders.append('Authorization', token);
+var myInit = { method: 'GET',
+               headers: myHeaders,
+               mode: 'cors',
+               cache: 'default'
+};
+
+function editarproductos(){
+    var id= getUrlParameter("id");
+  var myRequest = new Request('/api/products/editar/'+id, myInit);
+
+  fetch(myRequest)
+  .then(function(response) {
+      response.json().then(function(data) {
+        $("#campo_origen").val(data.origen);
+        $("#campo_codigo").val(data.codigo);
+        $("#campo_descripcion").val(data.descripcion);
+        $("#campo_fecha").val(data.fecha.split("T")[0]);
+
+    });
+
+});
+}
+
+$(document).ready(function(){
+
+        var myRequest = new Request('/api/users/perfil', myInit);
+
+        fetch(myRequest)
+        .then(function(response) {
+            response.json().then(function(data) {
+          //  console.log(data);
+            if(data._id===undefined){
+                window.location.href = "/users/ingresar";
+                return;
+            }
+            editarproductos();
+          });
+        });
+
+        $("#form_editar").submit(function(e){
+            e.preventDefault();
+            var t = $("#form_editar").serializeFormJSON();
+            var myInit = { method: 'PUT',
+                           headers: myHeaders,
+                           mode: 'cors',
+                           body: JSON.stringify(t),
+                           cache: 'default' };
+
+            var id= getUrlParameter("id");
+            var myRequest = new Request('/api/products/editError/'+id, myInit);
+
+            fetch(myRequest)
+            .then(function(response) {
+                response.json().then(function(data) {
+                if(data.status){
+                    window.location.href = "/products";
+                }
+                $("#alerta").html(data.mensaje);
+              });
+            })
+
+        });
+
+});
+</script>

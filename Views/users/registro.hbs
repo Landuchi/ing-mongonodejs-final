@@ -1,0 +1,69 @@
+<div class="row">
+  <div class="col-lg-8 " >
+    <h2 class="mt-3" style="margin-bottom:20px;">Registrar nuevo usuario</h2>
+      <form action="/users/registro" method="POST" id="registro_form">
+          <div class="form-group">
+            <label for="nombreuser">Nombre de usuario</label><br>
+            <input type="text" name ="nombreuser" class="form-control" value="{{nombreuser}} " required></input>
+          </div>
+          <div class="form-group">
+            <label for="origen">Correo</label><br>
+            <input type="email" name ="correo" class="form-control" value="{{correo}}" required></input>
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label><br>
+            <input type="password" name ="password" class="form-control" value="{{password}}" required></input>
+          </div>
+          <div class="form-group">
+            <label for="confirmpassword">Confirmar contraseña</label><br>
+            <input type="password" name ="confirmpassword" class="form-control" value="{{confirmpassword}}" required></input>
+          </div>
+          <div class="form-group">
+           <input type="submit" value="Registrar Usuario" class="btn btn-primary btn-lg mb-2">
+          <span id="alerta"></span>
+          </div>
+      </form>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+
+    //console.log("Test");
+    $("#registro_form").submit(function(e){
+        e.preventDefault();
+        var t = $("#registro_form").serializeFormJSON();
+
+      //  console.log("Data", t);
+
+    //   const token = sessionStorage.getItem('token');
+
+        var myHeaders = new Headers();
+        myHeaders.append('Content-Type', 'application/json');
+        /// myHeaders.append('Authorization', token);
+
+        var myInit = { method: 'POST',
+                       headers: myHeaders,
+                       mode: 'cors',
+                       body: JSON.stringify(t),
+                       cache: 'default' };
+
+        var myRequest = new Request('/api/users/registro', myInit);
+
+        fetch(myRequest)
+        .then(function(response) {
+            response.json().then(function(data) {
+          //  console.log(data);
+            if(data.status){
+
+              //  sessionStorage.setItem('token', data.token);
+                window.location.href = "/users/ingresar";
+            }
+            $("#alerta").html(data.mensaje);
+          });
+          /// alert("RESPONSE", response);
+        })
+
+    });
+});
+</script>

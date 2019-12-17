@@ -1,0 +1,70 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container">
+  <a class="navbar-brand" href="/">Errores de la web</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarResponsive">
+    <ul class="navbar-nav ml-auto">
+
+
+        <li class="nav-item visible" >
+          <a class="nav-link" href="/products/nuevo">Nuevo</a>
+        </li>
+        <li class="nav-item visible">
+          <a class="nav-link" href="/products">Ver Errores</a>
+        </li>
+        <li class="nav-item visible">
+          <a class="nav-link" href="#" id="cerrar_sesion">Cerrar sesión</a>
+        </li>
+
+            <li class="nav-item active novisible">
+            <a class="nav-link" href="/users/ingresar">Iniciar sesión
+            </a>
+            </li>
+
+
+
+
+    </ul>
+  </div>
+</div>
+</nav>
+<script >
+$(document).ready(function(){
+  const token = sessionStorage.getItem('token');
+  var myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json');
+  myHeaders.append('Authorization', token);
+  var myInit = { method: 'GET',
+                 headers: myHeaders,
+                 mode: 'cors',
+                 cache: 'default'
+  };
+        var myRequest = new Request('/api/users/perfil', myInit);
+
+        fetch(myRequest)
+        .then(function(response) {
+            response.json().then(function(data) {
+          //  console.log(data);
+            if(data._id!==undefined){
+              $(".visible").show();
+              $(".novisible").hide();
+            }else {
+                $(".visible").hide();
+                $(".novisible").show();
+            }
+      
+          });
+
+        });
+
+
+    $("#cerrar_sesion").click(function(e){
+      e.preventDefault();
+      sessionStorage.removeItem("token");
+      window.location.href="/users/ingresar";
+    });
+});
+
+</script>
